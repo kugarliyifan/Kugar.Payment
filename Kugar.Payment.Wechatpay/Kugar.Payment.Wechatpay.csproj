@@ -4,11 +4,7 @@
 	  <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="OneOf" Version="3.0.203" />
-  </ItemGroup>
-
-  <ItemGroup>
+	<ItemGroup>
     <ProjectReference Include="..\Kugar.Payment.Common\Kugar.Payment.Common.csproj" />
   </ItemGroup>
 
