@@ -8,6 +8,10 @@
 	  <Version>1.0.0</Version>
 	  <IncludeSymbols>true</IncludeSymbols>
 	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	  <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+	  <Description>通用支付的基类</Description>
+	  <RepositoryUrl>https://github.com/kugarliyifan/Kugar.Payment</RepositoryUrl>
+	  <PackageProjectUrl>https://github.com/kugarliyifan/Kugar.Payment</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

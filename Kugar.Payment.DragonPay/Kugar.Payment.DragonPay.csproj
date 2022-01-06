@@ -4,30 +4,47 @@
 		<TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
 		<BaseOutputPath>..\bin\</BaseOutputPath>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Version>1.0.9</Version>
+		<Version>1.0.11</Version>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<Description>用于对接建行龙存管龙支付</Description>
+		<PackageProjectUrl>https://github.com/kugarliyifan/Kugar.Payment</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/kugarliyifan/Kugar.Payment</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
-
-	<ItemGroup>
-	  <None Remove="Dlls\CCB_B2CPay_Util.dll" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Kugar.Payment.Common\Kugar.Payment.Common.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="CCB_B2CPay_Util">
-	    <HintPath>Dlls\CCB_B2CPay_Util.dll</HintPath>
-	  </Reference>
+		<Reference Include="CCB_B2CPay_Util">
+			<HintPath>Dlls\CCB_B2CPay_Util.dll</HintPath>
+			<BuildAction>None</BuildAction>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<Pack>true</Pack>
+			<PackagePath>lib\net5.0\;</PackagePath>
+		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Resource Include="Dlls\CCB_B2CPay_Util.dll">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Resource>
+		<Content Include="Dlls\CCB_B2CPay_Util.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib\net5.0;lib\netcoreapp3.1;</PackagePath>
+			</Content>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Dlls\CCB_B2CPay_Util.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+	<!--<ItemGroup>
+		<Resource Include="Dlls\CCB_B2CPay_Util.dll" >
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>-->
 
 
 </Project>
