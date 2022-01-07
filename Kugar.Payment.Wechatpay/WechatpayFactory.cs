@@ -11,11 +11,6 @@ namespace Kugar.Payment.Wechatpay
 
         public static void AddConfig(WechatpayConfig config)
         {
-            if (string.IsNullOrWhiteSpace(config.Host))
-            {
-                throw new ArgumentNullException(nameof(WechatpayConfig.Host), "请填写Host参数为当前站点域名");
-            }
-
             if (_cache.ContainsKey(config.AppId))
             {
                 return;

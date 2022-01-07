@@ -8,7 +8,7 @@ using Kugar.Payment.Wechatpay.Enums;
 
 namespace Kugar.Payment.Wechatpay.Results
 {
-    public class RefundNotifyResult: ResultBase
+    public class RefundNotifyResult: ResultBase, ICommonRefundResult
     {
         public RefundNotifyResult(IReadOnlyDictionary<string, string> source)
         {

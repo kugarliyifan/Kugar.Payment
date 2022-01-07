@@ -19,7 +19,9 @@ namespace Kugar.Payment.Common
         /// <summary>
         /// 退款单号
         /// </summary>
-        string RefundTradeNo { get; }
+        string OutRefundNo { get; }
+
+        string RefundId { get; }
 
         bool IsSuccess { get; }
     }

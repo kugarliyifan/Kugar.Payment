@@ -4,13 +4,14 @@
 	  <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
 	  <BaseOutputPath>..\bin\</BaseOutputPath>
 	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	  <Version>1.0.1</Version>
+	  <Version>1.0.2</Version>
 	  <IncludeSymbols>true</IncludeSymbols>
 	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	  <Description>用于对接微支付Web端</Description>
 	  <PackageProjectUrl>https://github.com/kugarliyifan/Kugar.Payment</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/kugarliyifan/Kugar.Payment</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>
+	  <PackageReleaseNotes>优化微支付通知Url的合成</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

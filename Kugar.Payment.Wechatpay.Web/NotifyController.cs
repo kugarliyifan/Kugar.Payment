@@ -8,7 +8,12 @@ namespace Kugar.Payment.Wechatpay.Web
 {
     public class NotifyController : ControllerBase
     {
-        // GET
+        /// <summary>
+        /// 支付回调通知
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="handler"></param>
+        /// <returns></returns>
         [HttpPost,Route("Core/Payment/Callback/Wechatpay/{appID}")]
         public async Task<IActionResult> PayCallback([FromRoute]string appId,[FromServices] IResultNotifyHandler handler=null)
         {
@@ -48,10 +53,49 @@ namespace Kugar.Payment.Wechatpay.Web
             } 
         }
 
+        /// <summary>
+        /// 退款回调通知
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="handler"></param>
+        /// <returns></returns>
         [HttpPost, Route("Core/Refund/Callback/Wechatpay/{appID}")]
         public async Task<IActionResult> RefundCallback([FromRoute] string appId, [FromServices] IResultNotifyHandler handler = null)
         {
-            return View();
+            Request.EnableBuffering();
+
+            //自定义MessageHandler，对微信请求的详细判断操作都在这里面。
+            var inputStream = Request.Body;
+            inputStream.Position = 0;
+
+            var pay = WechatpayFactory.GetByAppId(appId);
+
+            var result = await pay.NotifyHandler().DecodeRefundNotifyData(inputStream);
+
+            if (!result)
+            {
+                return Content(pay.NotifyHandler().BuildFaildResponse(result.Message), "application/xml");
+            }
+            else
+            {
+                if (handler != null)
+                {
+                    var ret = await handler.OnRefundNotifyAsync(result.ReturnData, appId);
+
+                    if (ret)
+                    {
+                        return Content(pay.NotifyHandler().BuildSuccessResponse(), "application/xml");
+                    }
+                    else
+                    {
+                        return Content(pay.NotifyHandler().BuildFaildResponse(ret.Message), "application/xml");
+                    }
+                }
+                else
+                {
+                    return Content(pay.NotifyHandler().BuildSuccessResponse(), "application/xml");
+                }
+            }
         }
     }
 }
