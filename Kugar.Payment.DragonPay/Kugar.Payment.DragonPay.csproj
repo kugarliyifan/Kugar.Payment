@@ -14,6 +14,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="bin\**" />
+	  <EmbeddedResource Remove="bin\**" />
+	  <None Remove="bin\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\Kugar.Payment.Common\Kugar.Payment.Common.csproj" />
 	</ItemGroup>
 

@@ -7,24 +7,19 @@
 	  <Version>1.0.1</Version>
 	  <IncludeSymbols>true</IncludeSymbols>
 	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	  <Description>用于对接微支付</Description>
+	  <Description>用于对接微支付Web端</Description>
 	  <PackageProjectUrl>https://github.com/kugarliyifan/Kugar.Payment</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/kugarliyifan/Kugar.Payment</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="bin\**" />	
-    <EmbeddedResource Remove="bin\**" />
-    <None Remove="bin\**" />
+    <ProjectReference Include="..\Kugar.Payment.Wechatpay\Kugar.Payment.Wechatpay.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-  </ItemGroup>
 
-	<ItemGroup>
-    <ProjectReference Include="..\Kugar.Payment.Common\Kugar.Payment.Common.csproj" />
-  </ItemGroup>
+	<ItemGroup  >
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
 
 </Project>

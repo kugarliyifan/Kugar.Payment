@@ -121,56 +121,65 @@ namespace Kugar.Payment.Wechatpay.Services
             {
                 XmlResolver = null
             };
-            xmlDoc.LoadXml(xml);
-            XmlNode xmlNode = xmlDoc.FirstChild;//获取到根节点<xml>
-            XmlNodeList nodes = xmlNode.ChildNodes;
-
-            var dic = new Dictionary<string, string>();
-
-            foreach (XmlNode xn in nodes)
-            {
-                XmlElement xe = (XmlElement)xn;
-                dic.Add(xe.Name, xe.InnerText);//获取xml的键值对到WxPayData内部的数据中
-            }
 
             try
             {
-                if (dic["return_code"] != "SUCCESS")
+                xmlDoc.LoadXml(xml);
+                XmlNode xmlNode = xmlDoc.FirstChild;//获取到根节点<xml>
+                XmlNodeList nodes = xmlNode.ChildNodes;
+
+                var dic = new Dictionary<string, string>();
+
+                foreach (XmlNode xn in nodes)
                 {
-                    return new ResultReturn<IReadOnlyDictionary<string, string>>(false, dic, message: "请求失败");
+                    XmlElement xe = (XmlElement)xn;
+                    dic.Add(xe.Name, xe.InnerText);//获取xml的键值对到WxPayData内部的数据中
                 }
 
-                var inputData = ToUrl(dic);
-
-                if (inputData.IsSuccess)
+                try
                 {
-                    return new FailResultReturn<IReadOnlyDictionary<string, string>>(inputData.Message);
-                }
-
-                if (checkSign)
-                {
-                    var sign = MakeSign(inputData.ReturnData);
-
-                    if (sign == dic["sign"])
+                    if (dic["return_code"] != "SUCCESS")
                     {
-                        return new SuccessResultReturn<IReadOnlyDictionary<string, string>>(dic);
+                        return new ResultReturn<IReadOnlyDictionary<string, string>>(false, dic, message: "请求失败");
+                    }
+
+                    var inputData = ToUrl(dic);
+
+                    if (inputData.IsSuccess)
+                    {
+                        return new FailResultReturn<IReadOnlyDictionary<string, string>>(inputData.Message);
+                    }
+
+                    if (checkSign)
+                    {
+                        var sign = MakeSign(inputData.ReturnData);
+
+                        if (sign == dic["sign"])
+                        {
+                            return new SuccessResultReturn<IReadOnlyDictionary<string, string>>(dic);
+                        }
+                        else
+                        {
+                            return new FailResultReturn<IReadOnlyDictionary<string, string>>("签名错误");
+                        }
                     }
                     else
                     {
-                        return new FailResultReturn<IReadOnlyDictionary<string, string>>("签名错误");
-                    }
-                }
-                else
-                {
-                    return new SuccessResultReturn<IReadOnlyDictionary<string, string>>(dic);
+                        return new SuccessResultReturn<IReadOnlyDictionary<string, string>>(dic);
 
+                    }
+                    
                 }
-                
+                catch (Exception ex)
+                {
+                    return new FailResultReturn<IReadOnlyDictionary<string, string>>(ex);
+                }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return new FailResultReturn<IReadOnlyDictionary<string, string>>(ex);
+                return new FailResultReturn<IReadOnlyDictionary<string, string>>(e);
             }
+
 
         }
 

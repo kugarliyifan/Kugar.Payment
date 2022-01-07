@@ -7,6 +7,7 @@ using Kugar.Core.BaseStruct;
 using Kugar.Core.ExtMethod;
 using Kugar.Payment.Common.Helpers;
 using Kugar.Payment.Wechatpay.Enums;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using OneOf;
 using static Kugar.Payment.Wechatpay.Services.MicropayService;
@@ -167,16 +168,20 @@ namespace Kugar.Payment.Wechatpay.Services
                 return new FailResultReturn<JsApiPayArgument>("spbill_create_ip不能为空");
             }
 
-             
+            var notifyUrl= string.IsNullOrWhiteSpace(_notify_url) ? Config.PaymentNotifyUrl : _notify_url;
+
+            notifyUrl = notifyUrl.Replace("{appID}", Config.AppId);
+
+            notifyUrl = Parent.BuildNotifyUrl(notifyUrl);
+
             data.AddOrUpdate("body", _body); //商品描述
             data.AddOrUpdate("total_fee", (int)(_amount * 100)); //总金额
             data.AddOrUpdate("out_trade_no", _tradeno);
             data.AddOrUpdate("trade_type", "JSAPI");
             data.AddOrUpdate("openid", _openid);
             data.AddOrUpdate("spbill_create_ip", _ip);
-            data.AddOrUpdate("notify_url", string.IsNullOrWhiteSpace(_notify_url) ? Config.PaymentNotifyUrl : _notify_url);
-
-
+            data.AddOrUpdate("notify_url", notifyUrl) ;
+            
 
             data.AddIf(!string.IsNullOrWhiteSpace(_attach), "attach", _attach);
             data.AddIf(!string.IsNullOrWhiteSpace(_fee_type), "fee_type", _fee_type)

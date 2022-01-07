@@ -15,6 +15,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Kugar.Core.NetCore" Version="1.2.155" />
     <PackageReference Include="OneOf" Version="3.0.203" />
   </ItemGroup>

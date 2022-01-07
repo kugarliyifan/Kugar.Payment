@@ -4,22 +4,23 @@ using System.Text;
 
 namespace Kugar.Payment.Common
 {
-    /// <summary>
-    /// 通用支付结果
-    /// </summary>
-    public interface ICommonPaymentResult
+    public interface ICommonRefundResult
     {
         /// <summary>
-        /// 微信支付订单号
+        /// 退款单交易号
         /// </summary>
-        string TransactionId {get; }
+        string TransactionId { get; }
 
         /// <summary>
         /// 商户系统内部订单号，要求32个字符内（最少6个字符），
         /// </summary>
-        string OutTradeNo {  get; }
+        string OutTradeNo { get; }
 
-        bool IsSuccess {  get; }
+        /// <summary>
+        /// 退款单号
+        /// </summary>
+        string RefundTradeNo { get; }
 
+        bool IsSuccess { get; }
     }
 }

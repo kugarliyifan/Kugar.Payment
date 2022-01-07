@@ -1,4 +1,7 @@
 ﻿using Kugar.Payment.Wechatpay.Services;
+using Microsoft.AspNetCore.Http;
+using System;
+using Kugar.Payment.Common.Helpers;
 
 namespace Kugar.Payment.Wechatpay
 {
@@ -52,5 +55,48 @@ namespace Kugar.Payment.Wechatpay
         /// </summary>
         /// <returns></returns>
         public NotifyHandlerService NotifyHandler() => new NotifyHandlerService(this, config: _config);
+
+        internal string BuildNotifyUrl(string notifyUrl)
+        {
+            if (!notifyUrl.StartsWith("http", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var host = string.Empty;
+                if (_config.Host != null)
+                {
+                    if (_config.Host.Value.IsT0)
+                    {
+                        host = _config.Host.Value.AsT0;
+                    }
+                    else
+                    {
+                        host = _config.Host.Value.AsT1(GlobalExtMethod.Provider);
+                    }
+                }
+                else
+                {
+                    var h = (IHttpContextAccessor)GlobalExtMethod.Provider.GetService(typeof(IHttpContextAccessor));
+
+                    var t1 = h.HttpContext.Request.Host;
+
+                    host =
+                        $"http{(h.HttpContext.Request.IsHttps ? "s" : "")}://{t1.Host}:{(t1.Port.HasValue ? t1.Port.Value.ToString() : "")}";
+                }
+
+                if (notifyUrl.StartsWith('/'))
+                {
+                    notifyUrl = host + notifyUrl;
+                }
+                else
+                {
+                    notifyUrl = $"{host}/{notifyUrl}";
+                }
+
+                return notifyUrl;
+            }
+            else
+            {
+                return notifyUrl;
+            }
+        }
     }
 }

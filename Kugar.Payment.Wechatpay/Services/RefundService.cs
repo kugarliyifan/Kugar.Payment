@@ -137,7 +137,9 @@ namespace Kugar.Payment.Wechatpay.Services
             dic.AddOrUpdate("refund_desc", _refund_desc);
 
             var notifyUrl = string.IsNullOrWhiteSpace(_notifyUrl) ? Config.RefundNotifyUrl : _notifyUrl;
-            
+
+            notifyUrl = Parent.BuildNotifyUrl(notifyUrl);
+
             dic.AddIf(!string.IsNullOrWhiteSpace(notifyUrl), "notify_url", notifyUrl);
 
 

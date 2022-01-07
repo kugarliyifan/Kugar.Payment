@@ -114,6 +114,18 @@ namespace Kugar.Payment.Wechatpay.Services
         }
 
         /// <summary>
+        /// 解析通知的数据,需要判断 IsSuccess==true && returnData.IsSuccess==true 才保证交易成功 <br />
+        /// ResultReturn.IsSuccess=false 为表示解析错误,如校验码错误之类的
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultReturn<RefundNotifyResult>> DecodeRefundNotifyData(Stream data)
+        {
+            var xml = Encoding.UTF8.GetString(await data.ReadAllBytesAsync());
+
+            return await DecodeRefundNotifyData(xml);
+        }
+
+        /// <summary>
         /// 输出成功信息
         /// </summary>
         /// <returns></returns>
