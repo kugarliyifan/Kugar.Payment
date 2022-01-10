@@ -10,30 +10,30 @@ namespace Kugar.Payment.DragonPay.Results
     /// <summary>
     /// 龙支付结果基类
     /// </summary>
-    public abstract class DragonResultBase
+    public abstract class DragonResultBase: ResultBase
     {
         public DragonResultBase(JObject json)
         {
-            Code=json.GetString("ERRCODE");
-            Msg = json.GetString("ERRMSG");
+            this.Code=json.GetString("ERRCODE");
+            this.Message = json.GetString("ERRMSG");
 
-            IsSuccess = json.GetString("RESULT") == "Y";
+            this.IsSuccess = json.GetString("RESULT") == "Y";
         }
 
-        /// <summary>
-        /// 错误代码
-        /// </summary>
-        public string Code { set; get; }
+        ///// <summary>
+        ///// 错误代码
+        ///// </summary>
+        //public override string Code { set; get; }
         
-        /// <summary>
-        /// 错误提示
-        /// </summary>
-        public string Msg { protected set; get; }
+        ///// <summary>
+        ///// 错误提示
+        ///// </summary>
+        //public string Message { set; get; }
 
-        /// <summary>
-        /// 是否成功
-        /// </summary>
-        public virtual bool IsSuccess { set; get; }
+        ///// <summary>
+        ///// 是否成功
+        ///// </summary>
+        //public virtual bool IsSuccess { set; get; }
     }
 
     /// <summary>

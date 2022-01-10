@@ -8,21 +8,21 @@ using Newtonsoft.Json.Linq;
 
 namespace Kugar.Payment.Alipay.Results
 {
-    public abstract class AlipayResultBase
+    public abstract class AlipayResultBase:ResultBase
     {
         protected AlipayResultBase(JObject json)
         {
             Code = json.GetString("code");
-            Msg = json.GetString("msg");
+            Message = json.GetString("msg");
             SubCode = json.GetString("sub_code");
             SubMsg = json.GetString("sub_msg");
 
             RawData = json;
         }
 
-        public string Code {protected set; get; }
+        //public string Code {protected set; get; }
 
-        public string Msg { protected set; get; }
+        //public string Msg { protected set; get; }
 
         public string SubCode { protected set; get; }
 

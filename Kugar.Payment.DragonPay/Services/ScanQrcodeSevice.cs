@@ -85,7 +85,8 @@ namespace Kugar.Payment.DragonPay.Services
                             result.OutTradeNo = tmpRet.ReturnData.OutTradeNo;
                             result.IsSuccess = tmpRet.ReturnData.IsSuccess;
                             result.IsNeedForCheck = false;
-
+                            result.Code = tmpRet.ReturnData.Code;
+                            result.Message = tmpRet.ReturnData.Message;
                             return new SuccessResultReturn<ScanQrCodeResult>(result);
                         }
                     }

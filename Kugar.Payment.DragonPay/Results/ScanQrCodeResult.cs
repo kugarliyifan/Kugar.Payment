@@ -11,21 +11,21 @@ namespace Kugar.Payment.DragonPay.Results
     {
         public ScanQrCodeResult(JObject json) : base(json)
         {
-            IsSuccess = json.GetString("RESULT") == "Y";
+            //IsSuccess = json.GetString("RESULT") == "Y";
 
             var result = json.GetString("RESULT");
 
             if (result=="Q")
             {
                 IsNeedForCheck = true;
-                Code = result;
+                //Code = result;
             }
             else
             {
-                Code = result;
+                //Code = result;
             }
 
-            Msg = json.GetString("ERRMSG");
+            //Msg = json.GetString("ERRMSG");
             
             TransactionId = json.GetString("TRACEID");
             OutTradeNo = json.GetString("ORDERID");

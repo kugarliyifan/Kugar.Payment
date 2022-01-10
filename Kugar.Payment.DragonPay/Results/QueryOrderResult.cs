@@ -11,7 +11,7 @@ namespace Kugar.Payment.DragonPay.Results
     {
         public QueryOrderResult(JObject json) : base(json)
         {
-            IsSuccess = json.GetString("RESULT") == "Y";
+            //IsSuccess = json.GetString("RESULT") == "Y";
 
             var result = json.GetString("RESULT");
 

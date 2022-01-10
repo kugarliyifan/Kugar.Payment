@@ -14,9 +14,16 @@ namespace Kugar.Payment.Wechatpay.Results
             IsSuccess = source.TryGetValue("return_code") == "SUCCESS" &&
                         source.TryGetValue("result_code") == "SUCCESS";
 
+           
+
             Return_Code = source.TryGetValue("return_code");
             Return_Msg = source.TryGetValue("return_msg");
             Result_Code = source.TryGetValue("result_code");
+
+
+            Code = Return_Code;
+            Message = Return_Msg;
+
             if (source.TryGetValue("return_code")== "SUCCESS")
             {
                 
