@@ -4,7 +4,7 @@
 	  <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
 	  <BaseOutputPath>..\bin\</BaseOutputPath>
 	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	  <Version>1.0.3</Version>
+	  <Version>1.0.20</Version>
 	  <IncludeSymbols>true</IncludeSymbols>
 	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	  <Description>用于对接微支付</Description>

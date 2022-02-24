@@ -24,7 +24,8 @@ namespace Kugar.Payment.Wechatpay.Results
 
                 BankType = source.TryGetValue("bank_type");
                 TotalFee = source.TryGetValue("total_fee").ToDecimal() / 100;
-                SettlementTotalFee = source.TryGetValue("settlement_total_fee	").ToDecimal() / 100;
+                TotalAmount = TotalFee;
+                SettlementTotalFee = source.TryGetValue("settlement_total_fee").ToDecimal() / 100;
                 FeeType = source.TryGetValue("fee_type");
                 CashFee = source.TryGetValue("cash_fee").ToDecimal() / 100;
                 CashFeeType = source.TryGetValue("cash_fee_type");

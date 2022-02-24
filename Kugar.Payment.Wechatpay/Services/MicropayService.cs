@@ -7,6 +7,7 @@ using Kugar.Core.ExtMethod;
 using Kugar.Payment.Wechatpay.Services;
 using OneOf;
 using Kugar.Payment.Common.Helpers;
+using Kugar.Payment.Wechatpay.Requests;
 using Kugar.Payment.Wechatpay.Results;
 
 namespace Kugar.Payment.Wechatpay.Services
@@ -16,22 +17,13 @@ namespace Kugar.Payment.Wechatpay.Services
     /// </summary>
     public class MicropayService : PayTradeServiceBase 
     {
-        private string _authCode = "";
-        //private string _body = "";
-        //private decimal _amount = 0.0m;
-        //private string _tradeno = "";
-        //private string _attach = "";
-        //private string _fee_type = "";
-        //private string _spbill_create_ip = "";
-        //private bool _no_credit = false;
-        //private DateTime? _time_start = null;
-        //private DateTime? _time_expire = null;
-        //private bool _profit_sharing = false;
+        //private string _authCode = "";
 
+        private MicropayRequest _request = null;
 
         internal MicropayService(Wechatpay pay, WechatpayConfig config) : base(pay, config)
         {
-
+            _request = new MicropayRequest(config);
         }
 
         /// <summary>
@@ -41,7 +33,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public MicropayService AuthCode(string authCode)
         {
-            _authCode = authCode;
+            _request.AuthCode = authCode;
             return this;
         }
 
@@ -52,7 +44,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual MicropayService Body(string body)
         {
-            _body = body;
+            _request.Body = body;
 
             return this;
         }
@@ -64,7 +56,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual MicropayService Amount(decimal amount)
         {
-            _amount = amount;
+            _request.Amount = amount;
             return this;
         }
 
@@ -75,7 +67,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual MicropayService OutTradeNo(string orderNo)
         {
-            _tradeno = orderNo;
+            _request.OutTradeNo  = orderNo;
 
             return this;
         }
@@ -88,8 +80,8 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual MicropayService LimitTime(DateTime? startDt, DateTime? endDt)
         {
-            _time_start = startDt;
-            _time_expire = endDt;
+            _request.LimitTimeStartDt = startDt;
+            _request.LimitTimeEndDt = endDt;
 
             return this;
         }
@@ -101,7 +93,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual MicropayService NoCredit(bool enabled)
         {
-            _no_credit = enabled;
+            _request.NoCredit = enabled;
 
             return this;
         }
@@ -113,14 +105,19 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual MicropayService ProfitSharing(bool enabled)
         {
-            _profit_sharing = enabled;
+            _request.ProfitSharing = enabled;
 
             return this;
         }
 
+        /// <summary>
+        /// 附加信息
+        /// </summary>
+        /// <param name="attach"></param>
+        /// <returns></returns>
         public virtual MicropayService Attach(string attach)
         {
-            _attach = attach;
+            _request.Attach = attach;
             return this;
         }
 
@@ -130,45 +127,31 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public async Task<ResultReturn<MicropayResult>> ExecuteAsync()
         {
-            var data = new Dictionary<string, OneOf<int, string>>();
 
-            if (string.IsNullOrWhiteSpace(_authCode))
+            var vr = _request.Validate();
+
+            if (!vr)
             {
-                return new FailResultReturn<MicropayResult>("AuthCode不能为空");
+                return vr.Cast((MicropayResult)null);
             }
 
-            if (string.IsNullOrWhiteSpace(_body))
-            {
-                return new FailResultReturn<MicropayResult>("body不能为空");
-            }
-
-            if (_amount <= 0)
-            {
-                return new FailResultReturn<MicropayResult>("amount必须大于0");
-            }
-
-            if (string.IsNullOrWhiteSpace(_tradeno))
-            {
-                return new FailResultReturn<MicropayResult>("out_trade_no不能为空");
-            }
-
-            data.AddOrUpdate("auth_code", _authCode); //授权码
-            data.AddOrUpdate("body", _body); //商品描述
-            data.AddOrUpdate("total_fee", (int)(_amount * 100)); //总金额
-            data.AddOrUpdate("out_trade_no", _tradeno); //产生随机的商户订单号
-            data.AddIf(!string.IsNullOrWhiteSpace(_attach), "attach", _attach);
-            data.AddIf(!string.IsNullOrWhiteSpace(_fee_type), "fee_type", _fee_type)
-                //.AddIf(!string.IsNullOrWhiteSpace(_spbill_create_ip), "spbill_create_ip", _spbill_create_ip)
-                .AddIf(_time_start.HasValue, "time_start", _time_start.Value.ToString("yyyyMMddHHmmss"))
-                .AddIf(_time_expire.HasValue, "time_expire", _time_expire.Value.ToString("yyyyMMddHHmmss"))
-                .AddIf(_no_credit, "limit_pay", "no_credit")
-                .AddIf(_profit_sharing, "profit_sharing","Y")
-                ;
+            //data.AddOrUpdate("auth_code", _authCode); //授权码
+            //data.AddOrUpdate("body", _body); //商品描述
+            //data.AddOrUpdate("total_fee", (int)(_amount * 100)); //总金额
+            //data.AddOrUpdate("out_trade_no", _tradeno); //产生随机的商户订单号
+            //data.AddIf(!string.IsNullOrWhiteSpace(_attach), "attach", _attach);
+            //data.AddIf(!string.IsNullOrWhiteSpace(_fee_type), "fee_type", _fee_type)
+            //    //.AddIf(!string.IsNullOrWhiteSpace(_spbill_create_ip), "spbill_create_ip", _spbill_create_ip)
+            //    .AddIf(_time_start.HasValue, "time_start", _time_start.Value.ToString("yyyyMMddHHmmss"))
+            //    .AddIf(_time_expire.HasValue, "time_expire", _time_expire.Value.ToString("yyyyMMddHHmmss"))
+            //    .AddIf(_no_credit, "limit_pay", "no_credit")
+            //    .AddIf(_profit_sharing, "profit_sharing","Y")
+            //    ;
 
 
             string url = $"{Config.GatewayHost}/pay/micropay";
 
-            var dic = await base.PostData(url, data, 1);
+            var dic = await base.PostData(url, _request, 1);
 
             var result = new MicropayResult(dic.ReturnData);
 
@@ -185,6 +168,8 @@ namespace Kugar.Payment.Wechatpay.Services
             }
             else if (result.Err_Code == "USERPAYING")
             {
+                Parent.Polling().PollingPayOrder(result.TransactionId,result.OutTradeNo);
+
                 return new FailResultReturn<MicropayResult>("等待用户确认", 10003);
             }
             else if (!dic.ReturnData.ContainsKey("return_code") || dic.ReturnData.TryGetValue("return_code") == "FAIL")
@@ -196,7 +181,7 @@ namespace Kugar.Payment.Wechatpay.Services
             }
             else
             {
-                await Parent.Common().CancelOrder(_tradeno);
+                await Parent.Common().CancelOrderByOrderId(_tradeno);
 
                 return new FailResultReturn<MicropayResult>(dic.ReturnData.TryGetValue("err_code").ToStringEx());
             }

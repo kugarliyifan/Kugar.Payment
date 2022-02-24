@@ -21,5 +21,9 @@ namespace Kugar.Payment.Common
 
         bool IsSuccess {  get; }
 
+        /// <summary>
+        /// 本次交易支付的订单金额,单位为元
+        /// </summary>
+        public decimal TotalAmount { set; get; }
     }
 }

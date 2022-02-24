@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Kugar.Payment.Common;
 
 namespace Kugar.Payment.DragonPay
 {
-    public class DragonPayConfig
+    public class DragonPayConfig:ConfigBase
     {
+
+        public DragonPayConfig() : base()
+        {
+            this.GatewayHost = "https://ibsbjstar.ccb.com.cn";
+        }
+
         /// <summary>
         /// 商户号
         /// </summary>

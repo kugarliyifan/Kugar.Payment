@@ -192,7 +192,7 @@ namespace Kugar.Payment.Wechatpay.Services
         public virtual async Task<ResultReturn<IReadOnlyDictionary<string, string>>> UnifiedOrder(
             Dictionary<string, OneOf<int, string>> inputData, int retryCount = 1)
         {
-            string url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+            string url = $"{Config.GatewayHost}/pay/unifiedorder";
             //检测必填参数
             if (!inputData.ContainsKey("out_trade_no"))
             {
@@ -230,12 +230,14 @@ namespace Kugar.Payment.Wechatpay.Services
                     "统一支付接口中，缺少必填参数product_id！trade_type为JSAPI时，product_id为必填参数！");
                 //throw new WxPayException();
             }
-
+             
             //异步通知url未设置，则使用配置文件中的url
             if (!inputData.ContainsKey("notify_url"))
             {
                 inputData.AddOrUpdate("notify_url", this.Config.PaymentNotifyUrl);//异步通知url
             }
+
+
 
             return await this.PostData(url, inputData, retryCount);
 
@@ -271,7 +273,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        public async Task<ResultReturn> CancelOrder(string orderId)
+        public async Task<ResultReturn> CancelOrderByOrderId(string orderId)
         {
             string url = $"{Config.GatewayHost}/secapi/pay/reverse";
 
@@ -298,8 +300,63 @@ namespace Kugar.Payment.Wechatpay.Services
                     return new SuccessResultReturn<string>(t);
                 }
             }
+            
+            //如果结果为success且不需要重新调用撤销，则表示撤销成功
+            if (result.ReturnData.TryGetValue("result_code").ToString() != "SUCCESS" && result.ReturnData.TryGetValue("recall").ToString() == "N")
+            {
+                return SuccessResultReturn.Default;
+            }
+            else if (result.ReturnData.TryGetValue("recall").ToString() == "Y")
+            {
+                count--;
 
+                if (count <= 0)
+                {
+                    return new FailResultReturn("超过重试次数");
+                }
 
+                goto retry;
+            }
+            //接口调用失败
+            else if (result.ReturnData.TryGetValue("return_code").ToString() != "SUCCESS")
+            {
+                return new FailResultReturn($"{result.ReturnData.TryGetValue("err_code").ToString()},{result.ReturnData.TryGetValue("err_code_des")}".ToStringEx());
+            }
+            return new FailResultReturn<string>($"{result.ReturnData.TryGetValue("err_code").ToString()},{result.ReturnData.TryGetValue("err_code_des")}".ToStringEx(), 0);
+        }
+
+        /// <summary>
+        /// 取消支付单
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        public async Task<ResultReturn> CancelOrderByTransactionId(string transaction_id)
+        {
+            string url = $"{Config.GatewayHost}/secapi/pay/reverse";
+
+            if (transaction_id == null)
+            {
+                return new FailResultReturn("单号无效");
+            }
+
+            var dic = new Dictionary<string, OneOf<int, string>>()
+            {
+                ["transaction_id"] = transaction_id
+            };
+
+            var count = 5;
+
+        retry:
+
+            var result = await base.PostData(url, dic, 3);
+
+            if (result.IsSuccess && CheckIsSuccess(result.ReturnData))
+            {
+                if (result.ReturnData.TryGetValue("transaction_id", out var t))
+                {
+                    return new SuccessResultReturn<string>(t);
+                }
+            }
 
             //如果结果为success且不需要重新调用撤销，则表示撤销成功
             if (result.ReturnData.TryGetValue("result_code").ToString() != "SUCCESS" && result.ReturnData.TryGetValue("recall").ToString() == "N")
@@ -324,7 +381,7 @@ namespace Kugar.Payment.Wechatpay.Services
             }
             return new FailResultReturn<string>($"{result.ReturnData.TryGetValue("err_code").ToString()},{result.ReturnData.TryGetValue("err_code_des")}".ToStringEx(), 0);
         }
-        
+
         /// <summary>
         /// 通过付款码查询用户对应OpenId
         /// </summary>
@@ -349,7 +406,6 @@ namespace Kugar.Payment.Wechatpay.Services
                 return new FailResultReturn<string>($"{result.ReturnData.TryGetValue("err_code").ToString()},{result.ReturnData.TryGetValue("err_code_des")}".ToStringEx(), 0);
             }
         }
-
         
     }
 }

@@ -61,7 +61,7 @@ namespace Kugar.Payment.DragonPay.Services
 
         public async Task<ResultReturn<ScanQrCodeResult>> ExecuteAsync()
         {
-            var ret= await base.PostData("https://ibsbjstar.ccb.com.cn/CCBIS/B2CMainPlat_00_BEPAY", _request,1);
+            var ret= await base.PostData($"{Config.GatewayHost}/CCBIS/B2CMainPlat_00_BEPAY", _request,1);
 
             if (ret.IsSuccess)
             {
@@ -69,26 +69,33 @@ namespace Kugar.Payment.DragonPay.Services
 
                 if (result.IsNeedForCheck && _pollQueryCount>0)
                 {
-                    var tmp = _pollQueryCount;
-
-                    for (int i = 0; i < tmp; i++)
+                    if (_pollQueryCount>0)
                     {
-                        await Task.Delay(result.WaitTime);
+                        var tmp = _pollQueryCount;
 
-                        var tmpRet=await Parent.QueryOrder().AuthCode(_request.AuthCode)
-                            .OrderId(_request.OrderId)
-                            .ExecuteAsync();
-
-                        if (tmpRet.IsSuccess && tmpRet.ReturnData.IsSuccess && !tmpRet.ReturnData.IsNeedForCheck)
+                        for (int i = 0; i < tmp; i++)
                         {
-                            result.TransactionId = tmpRet.ReturnData.TransactionId;
-                            result.OutTradeNo = tmpRet.ReturnData.OutTradeNo;
-                            result.IsSuccess = tmpRet.ReturnData.IsSuccess;
-                            result.IsNeedForCheck = false;
-                            result.Code = tmpRet.ReturnData.Code;
-                            result.Message = tmpRet.ReturnData.Message;
-                            return new SuccessResultReturn<ScanQrCodeResult>(result);
+                            await Task.Delay(result.WaitTime);
+
+                            var tmpRet = await Parent.QueryOrder().AuthCode(_request.AuthCode)
+                                .OrderId(_request.OrderId)
+                                .ExecuteAsync();
+
+                            if (tmpRet.IsSuccess && tmpRet.ReturnData.IsSuccess && !tmpRet.ReturnData.IsNeedForCheck)
+                            {
+                                result.TransactionId = tmpRet.ReturnData.TransactionId;
+                                result.OutTradeNo = tmpRet.ReturnData.OutTradeNo;
+                                result.IsSuccess = tmpRet.ReturnData.IsSuccess;
+                                result.IsNeedForCheck = false;
+                                result.Code = tmpRet.ReturnData.Code;
+                                result.Message = tmpRet.ReturnData.Message;
+                                return new SuccessResultReturn<ScanQrCodeResult>(result);
+                            }
                         }
+                    }
+                    else
+                    {
+                        ret.Cast(result);
                     }
 
                 }
@@ -97,6 +104,10 @@ namespace Kugar.Payment.DragonPay.Services
             }
             else
             {
+                await Parent.CancelOrder().OrderId(_request.OrderId)
+                    .QrCodeType(_request.QrCodeType)
+                    .ExecuteAsync();
+
                 return ret.Cast((ScanQrCodeResult)null);
             }
         }

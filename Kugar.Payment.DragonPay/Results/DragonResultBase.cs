@@ -50,13 +50,15 @@ namespace Kugar.Payment.DragonPay.Results
         /// 流水号
         /// </summary>
         public string OutTradeNo { get;  set; }
-        
+
+        public decimal TotalAmount { get; set; }
+
 
         protected DragonPaymentResultBase(JObject json) : base(json)
         {
             OutTradeNo = json.GetString("ORDERID");
 
-            if (IsSuccess)
+            if (this.IsSuccess)
             {
                 TransactionId = json.GetString("TRACEID");
             }

@@ -44,7 +44,7 @@ namespace Kugar.Payment.DragonPay.Services
 
         public async Task<ResultReturn<QueryOrderResult>> ExecuteAsync()
         {
-            var ret = await base.PostData("https://ibsbjstar.ccb.com.cn/CCBIS/B2CMainPlat_00_BEPAY", _request);
+            var ret = await base.PostData($"{Config.GatewayHost}/CCBIS/B2CMainPlat_00_BEPAY", _request);
 
             if (ret.IsSuccess)
             {

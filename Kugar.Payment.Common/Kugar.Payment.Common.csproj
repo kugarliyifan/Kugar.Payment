@@ -5,7 +5,7 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <BaseOutputPath>..\bin\</BaseOutputPath>
 	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	  <Version>1.0.2</Version>
+	  <Version>1.0.5</Version>
 	  <IncludeSymbols>true</IncludeSymbols>
 	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	  <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
@@ -21,7 +21,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kugar.Core.NetCore" Version="1.2.155" />
+    <Compile Remove="IPollingCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="IPollingCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Kugar.Core.NetCore" Version="1.2.158" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="OneOf" Version="3.0.203" />
   </ItemGroup>
 

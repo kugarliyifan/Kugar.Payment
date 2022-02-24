@@ -10,8 +10,8 @@ namespace Kugar.Payment.Common
     {
         //Task<ResultReturn> OnNotify(ICommonPaymentResult result);
 
-        Task<ResultReturn> OnPaymentNotifyAsync(ICommonPaymentResult result,string appId);
+        Task<ResultReturn> OnPaymentNotifyAsync(object sender,ICommonPaymentResult result,string appId);
 
-        Task<ResultReturn> OnRefundNotifyAsync(ICommonRefundResult result,string appId);
+        Task<ResultReturn> OnRefundNotifyAsync(object sender, ICommonRefundResult result,string appId);
     }
 }

@@ -10,7 +10,9 @@ using Kugar.Core.BaseStruct;
 using Kugar.Core.ExtMethod;
 using Kugar.Core.Network;
 using Kugar.Payment.Wechatpay.Enums;
+using Kugar.Payment.Wechatpay.Requests;
 using OneOf;
+using static Kugar.Payment.Wechatpay.Services.MicropayService;
 
 namespace Kugar.Payment.Wechatpay.Services
 {
@@ -20,6 +22,20 @@ namespace Kugar.Payment.Wechatpay.Services
         {
             this.Config = config;
             this.Parent = pay;
+        }
+
+        protected async Task<ResultReturn<IReadOnlyDictionary<string, string>>> PostData(string url, WechatRequestBase request, int retryCount = 5, bool useClientCert = false)
+        {
+            var vr = request.Validate();
+
+            if (!vr)
+            {
+                return vr.Cast((IReadOnlyDictionary<string, string>)null);
+            }
+
+            var inputData = request.ToData();
+
+            return await PostData(url, inputData, retryCount, useClientCert);
         }
 
         protected async Task<ResultReturn<IReadOnlyDictionary<string, string>>> PostData(string url, Dictionary<string, OneOf<int, string>> inputData, int retryCount = 5, bool useClientCert = false)
@@ -71,6 +87,7 @@ namespace Kugar.Payment.Wechatpay.Services
                 return new FailResultReturn<IReadOnlyDictionary<string, string>>(e);
             }
         }
+
 
         protected string MakeSign(string inputData)
         {
@@ -145,7 +162,7 @@ namespace Kugar.Payment.Wechatpay.Services
 
                     var inputData = ToUrl(dic);
 
-                    if (inputData.IsSuccess)
+                    if (!inputData.IsSuccess)
                     {
                         return new FailResultReturn<IReadOnlyDictionary<string, string>>(inputData.Message);
                     }
@@ -205,9 +222,12 @@ namespace Kugar.Payment.Wechatpay.Services
                     return new FailResultReturn<string>($"{key}值为null的字段!");
                 }
 
-                var v = value.ToStringEx();
+                var v =value.Match(
+                    i=>i.ToStringEx(),
+                    j=>j.ToStringEx()
+                    );
 
-                if (key != "sign" && value.Value.ToStringEx() != "")
+                if (key != "sign" && v != "")
                 {
                     buff += key + "=" + v + "&";
                 }
@@ -270,8 +290,8 @@ namespace Kugar.Payment.Wechatpay.Services
                 }
 
                 pair.Value.Match(
-                    i => xml += "<" + pair.Key + ">" + pair.Value + "</" + pair.Key + ">",
-                    s => xml += "<" + pair.Key + ">" + "<![CDATA[" + pair.Value + "]]></" + pair.Key + ">"
+                    i => xml += "<" + pair.Key + ">" + pair.Value.AsT0 + "</" + pair.Key + ">",
+                    s => xml += "<" + pair.Key + ">" + "<![CDATA[" + pair.Value.AsT1 + "]]></" + pair.Key + ">"
                 );
             }
             xml += "</xml>";

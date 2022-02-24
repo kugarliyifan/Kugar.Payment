@@ -26,7 +26,10 @@ namespace Kugar.Payment.Wechatpay.Services
                              source.TryGetValue("result_code") == "SUCCESS" &&
                              source.TryGetValue("trade_state") == "SUCCESS";
 
-
+            if (TradeState== TradeState.Revoked)
+            {
+                this.IsCanceled = true;
+            }
         }
 
         /// <summary>

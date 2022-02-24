@@ -1,15 +1,24 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Threading;
+using Kugar.Core.ExtMethod;
 using Kugar.Core.Log;
+using Kugar.Payment.Common;
 using Kugar.Payment.Wechatpay.Enums;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using OneOf;
 using OneOf.Types;
 
 namespace Kugar.Payment.Wechatpay
 {
-    public class WechatpayConfig
+    public class WechatpayConfig: ConfigBase
     {
+        public WechatpayConfig() : base()
+        {
+            this.GatewayHost = "https://api.mch.weixin.qq.com";
+        }
+
         /// <summary>
         /// 绑定支付的APPID（必须配置）    
         /// </summary>
@@ -51,18 +60,7 @@ namespace Kugar.Payment.Wechatpay
         /// 退款通知默认地址
         /// </summary>
         public string RefundNotifyUrl { set; get; } = "/Core/Refund/Callback/Wechatpay/{appID}";
-
-        /// <summary>
-        /// 当前站点的域名,可以是固定的String,也可以传入GetHostHandler类型的委托进行运行时处理,返回的域名,必须带http或者https头
-        /// </summary>
-        public OneOf<string, GetHostHandler>? Host { set; get; }
-
-        /// <summary>
-        /// 微支付网关域名
-        /// </summary>
-        public string GatewayHost { set; get; } = "https://api.mch.weixin.qq.com";
-
-        public delegate string GetHostHandler(IServiceProvider services);
+        
     }
 
     

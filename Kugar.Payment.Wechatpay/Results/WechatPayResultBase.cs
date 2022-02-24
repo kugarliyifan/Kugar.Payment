@@ -77,6 +77,8 @@ namespace Kugar.Payment.Wechatpay.Results
         /// </summary>
         public string OutTradeNo { set; get; }
 
+        public decimal TotalAmount { get; set; }
+
         /// <summary>
         /// 商家数据包，原样返回
         /// </summary>

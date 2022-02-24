@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Kugar.Core.BaseStruct;
 using Kugar.Core.ExtMethod;
 using Kugar.Payment.Common.Helpers;
 using Kugar.Payment.Wechatpay.Enums;
+using Kugar.Payment.Wechatpay.Requests;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using OneOf;
@@ -17,14 +19,13 @@ namespace Kugar.Payment.Wechatpay.Services
     /// <summary>
     /// 公众号/小程序使用的支付服务
     /// </summary>
-    public class JsApiPayService: PayTradeServiceBase 
+    public class JsApiPayService: PayTradeServiceBase
     {
-        private string _openid = "";
-        private string _notify_url = "";
-        private string _ip = "";
+        private JsApiPayRequest _request = null;
 
         public JsApiPayService(Wechatpay pay, WechatpayConfig config) : base(pay, config)
         {
+            _request = new JsApiPayRequest(config);
         }
 
         /// <summary>
@@ -34,7 +35,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public JsApiPayService OpenId(string openId)
         {
-            _openid = openId;
+            _request.OpenId = openId;
             return this;
         }
 
@@ -45,7 +46,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public JsApiPayService NotifyUrl(string url)
         {
-            _notify_url = url;
+            _request.NotifyUrl = url;
 
             return this;
         }
@@ -57,7 +58,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public JsApiPayService SpbillCreateIp(string ipv4orv6)
         {
-            _ip = ipv4orv6;
+            _request.SpbillCreateIp  = ipv4orv6;
 
             return this;
         }
@@ -69,7 +70,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual JsApiPayService Body(string body)
         {
-            _body = body;
+            _request.Body = body;
 
             return this;
         }
@@ -81,7 +82,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual JsApiPayService Amount(decimal amount)
         {
-            _amount = amount;
+            _request.Amount = amount;
             return this;
         }
 
@@ -92,7 +93,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual JsApiPayService OutTradeNo(string orderNo)
         {
-            _tradeno = orderNo;
+            _request.OutTradeNo = orderNo;
 
             return this;
         }
@@ -105,8 +106,8 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual JsApiPayService LimitTime(DateTime? startDt, DateTime? endDt)
         {
-            _time_start = startDt;
-            _time_expire = endDt;
+            _request.LimitTimeStartDt = startDt;
+            _request.LimitTimeEndDt = endDt;
 
             return this;
         }
@@ -118,7 +119,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual JsApiPayService NoCredit(bool enabled)
         {
-            _no_credit = enabled;
+            _request.NoCredit = enabled;
 
             return this;
         }
@@ -130,7 +131,7 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public virtual JsApiPayService ProfitSharing(bool enabled)
         {
-            _profit_sharing = enabled;
+            _request.ProfitSharing = enabled;
 
             return this;
         }
@@ -141,55 +142,14 @@ namespace Kugar.Payment.Wechatpay.Services
         /// <returns></returns>
         public async Task<ResultReturn<JsApiPayArgument>> ExecuteAsync()
         {
-            var data = new Dictionary<string, OneOf<int, string>>();
+            var vr = _request.Validate();
 
-            if (string.IsNullOrWhiteSpace(_openid))
+            if (!vr)
             {
-                return new FailResultReturn<JsApiPayArgument>("openId不能为空");
+                return vr.Cast((JsApiPayArgument)null);
             }
 
-            if (string.IsNullOrWhiteSpace(_body))
-            {
-                return new FailResultReturn<JsApiPayArgument>("body不能为空");
-            }
-
-            if (_amount <= 0)
-            {
-                return new FailResultReturn<JsApiPayArgument>("amount必须大于0");
-            }
-
-            if (string.IsNullOrWhiteSpace(_tradeno))
-            {
-                return new FailResultReturn<JsApiPayArgument>("out_trade_no不能为空");
-            }
-
-            if (string.IsNullOrWhiteSpace(_ip))
-            {
-                return new FailResultReturn<JsApiPayArgument>("spbill_create_ip不能为空");
-            }
-
-            var notifyUrl= string.IsNullOrWhiteSpace(_notify_url) ? Config.PaymentNotifyUrl : _notify_url;
-
-            notifyUrl = notifyUrl.Replace("{appID}", Config.AppId);
-
-            notifyUrl = Parent.BuildNotifyUrl(notifyUrl);
-
-            data.AddOrUpdate("body", _body); //商品描述
-            data.AddOrUpdate("total_fee", (int)(_amount * 100)); //总金额
-            data.AddOrUpdate("out_trade_no", _tradeno);
-            data.AddOrUpdate("trade_type", "JSAPI");
-            data.AddOrUpdate("openid", _openid);
-            data.AddOrUpdate("spbill_create_ip", _ip);
-            data.AddOrUpdate("notify_url", notifyUrl) ;
-            
-
-            data.AddIf(!string.IsNullOrWhiteSpace(_attach), "attach", _attach);
-            data.AddIf(!string.IsNullOrWhiteSpace(_fee_type), "fee_type", _fee_type)
-                //.AddIf(!string.IsNullOrWhiteSpace(_ip), "spbill_create_ip", _ip)
-                .AddIf(_time_start.HasValue, "time_start", _time_start.Value.ToString("yyyyMMddHHmmss"))
-                .AddIf(_time_expire.HasValue, "time_expire", _time_expire.Value.ToString("yyyyMMddHHmmss"))
-                .AddIf(_no_credit, "limit_pay", "no_credit")
-                .AddIf(_profit_sharing, "profit_sharing", "Y");
+            var data = _request.ToData();
 
             var ret=await base.Parent.Common().UnifiedOrder(data, 3);
 
@@ -198,7 +158,7 @@ namespace Kugar.Payment.Wechatpay.Services
                 var args = new JsApiPayArgument()
                 {
                     AppId = ret.ReturnData.TryGetValue("appid"),
-                    Timestamp = GenerateTimeStamp(),
+                    TimeStamp = GenerateTimeStamp(),
                     NonceStr = GenerateNonceStr(),
                     Package = $"prepay_id={ret.ReturnData.TryGetValue("prepay_id")}",
                     SignType = "MD5"
@@ -207,7 +167,7 @@ namespace Kugar.Payment.Wechatpay.Services
                 args.PaySign = MakeSign(ToUrl(new Dictionary<string, OneOf<int, string>>()
                 {
                     ["appId"]=args.AppId,
-                    ["timeStamp"]=args.Timestamp,
+                    ["timeStamp"]=args.TimeStamp,
                     ["nonceStr"]=args.NonceStr,
                     ["package"]=args.Package,
                     ["signType"]=args.SignType
@@ -230,7 +190,7 @@ namespace Kugar.Payment.Wechatpay.Services
         {
             public string AppId { set; get; }
 
-            public string Timestamp { set; get; }
+            public string TimeStamp { set; get; }
 
             public string NonceStr { set; get; }
 
@@ -245,7 +205,7 @@ namespace Kugar.Payment.Wechatpay.Services
                 return new JObject()
                 {
                     ["appId"] = this.AppId,
-                    ["timeStamp"] = this.Timestamp,
+                    ["timeStamp"] = this.TimeStamp,
                     ["nonceStr"] = this.NonceStr,
                     ["package"] = this.Package,
                     ["signType"] = this.SignType,

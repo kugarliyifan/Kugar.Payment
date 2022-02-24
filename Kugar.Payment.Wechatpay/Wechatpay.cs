@@ -1,6 +1,7 @@
 ﻿using Kugar.Payment.Wechatpay.Services;
 using Microsoft.AspNetCore.Http;
 using System;
+using Kugar.Core.Services;
 using Kugar.Payment.Common.Helpers;
 
 namespace Kugar.Payment.Wechatpay
@@ -50,6 +51,8 @@ namespace Kugar.Payment.Wechatpay
         /// <returns></returns>
         public CommonService Common() => new CommonService(this, config: _config);
 
+        public PollingService Polling() => new PollingService(this, _config);
+
         /// <summary>
         /// 通知处理
         /// </summary>
@@ -60,27 +63,30 @@ namespace Kugar.Payment.Wechatpay
         {
             if (!notifyUrl.StartsWith("http", StringComparison.CurrentCultureIgnoreCase))
             {
-                var host = string.Empty;
-                if (_config.Host != null)
-                {
-                    if (_config.Host.Value.IsT0)
-                    {
-                        host = _config.Host.Value.AsT0;
-                    }
-                    else
-                    {
-                        host = _config.Host.Value.AsT1(GlobalExtMethod.Provider);
-                    }
-                }
-                else
-                {
-                    var h = (IHttpContextAccessor)GlobalExtMethod.Provider.GetService(typeof(IHttpContextAccessor));
+                var host = _config.Host.Match(
+                    i=>i,
+                    j=>j(GlobalProvider.Provider)
+                    );
+                //if (_config.Host.)
+                //{
+                //    if (_config.Host.Value.IsT0)
+                //    {
+                //        host = _config.Host.Value.AsT0;
+                //    }
+                //    else
+                //    {
+                //        host = _config.Host.Value.AsT1(GlobalProvider.Provider);
+                //    }
+                //}
+                //else
+                //{
+                //    var h = (IHttpContextAccessor)GlobalProvider.Provider.GetService(typeof(IHttpContextAccessor));
 
-                    var t1 = h.HttpContext.Request.Host;
+                //    var t1 = h.HttpContext.Request.Host;
 
-                    host =
-                        $"http{(h.HttpContext.Request.IsHttps ? "s" : "")}://{t1.Host}:{(t1.Port.HasValue ? t1.Port.Value.ToString() : "")}";
-                }
+                //    host =
+                //        $"http{(h.HttpContext.Request.IsHttps ? "s" : "")}://{t1.Host}:{(t1.Port.HasValue ? t1.Port.Value.ToString() : "")}";
+                //}
 
                 if (notifyUrl.StartsWith('/'))
                 {

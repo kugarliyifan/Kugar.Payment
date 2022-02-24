@@ -19,6 +19,8 @@ namespace Kugar.Payment.Common
         /// 错误提示
         /// </summary>
         public virtual string Message { set; get; }
+
+        public virtual bool IsCanceled { set; get; }
         
         /// <summary>
         /// 原始结果字符串

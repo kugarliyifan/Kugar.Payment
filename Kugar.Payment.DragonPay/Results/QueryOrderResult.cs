@@ -45,7 +45,18 @@ namespace Kugar.Payment.DragonPay.Results
 
                 PaidAmount = json.GetDecimal("PAID_AMOUNT");
 
+                TotalAmount = Amount;
+
                 ReceiptAmount = json.GetDecimal("RECEIPT_AMOUNT");
+
+                var p = json.GetJObject("PAYMENT_DETAILS");
+
+                TransactionId = p.GetString("THIRD_TRADE_NO");
+
+                if (this.Message.Contains("请撤销订单"))
+                {
+                    this.IsCanceled = true;
+                }
             }
             
         }
@@ -80,5 +91,6 @@ namespace Kugar.Payment.DragonPay.Results
         /// 商户实收金额
         /// </summary>
         public decimal ReceiptAmount { set; get; }
+        
     }
 }

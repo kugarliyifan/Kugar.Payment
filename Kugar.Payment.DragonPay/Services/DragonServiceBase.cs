@@ -9,6 +9,7 @@ using System.Xml;
 using CCB_B2CPay_Util;
 using Kugar.Core.BaseStruct;
 using Kugar.Core.ExtMethod;
+using Kugar.Core.Log;
 using Kugar.Core.Network;
 using Kugar.Payment.DragonPay.Requests;
 using Newtonsoft.Json.Linq;
@@ -40,12 +41,16 @@ namespace Kugar.Payment.DragonPay.Services
                     .SetParameter("ccbParam", ccParam) 
                     .RetryCount(retryCount);
 
+                LoggerManager.Default.Debug("龙支付调用参数:" + tmpStr);
+
                 //if (useClientCert)
                 //{
                 //    http.AddCertificate(new X509Certificate2(Config.CertData, Config.CertPassword));
                 //}
 
                 var response = await http.Post_StringAsync();
+
+                LoggerManager.Default.Debug("龙支付回复参数:" + response);
 
                 if (response.Contains("ccbParam deciphering fail"))
                 {

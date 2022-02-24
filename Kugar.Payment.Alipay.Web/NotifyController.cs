@@ -1,14 +1,10 @@
-﻿using System;
-using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
-using Kugar.Core.ExtMethod;
-using Kugar.Core.Log;
 using Kugar.Payment.Common;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Kugar.Payment.Wechatpay.Web
+namespace Kugar.Payment.Alipay.Web
 {
     public class NotifyController : ControllerBase
     {
@@ -18,36 +14,18 @@ namespace Kugar.Payment.Wechatpay.Web
         /// <param name="appId"></param>
         /// <param name="handler"></param>
         /// <returns></returns>
-        [HttpPost, Route("Core/Payment/Callback/Wechatpay/{appID}")]
-        public async Task<IActionResult> PayCallback([FromRoute] string appId, [FromServices] IResultNotifyHandler handler = null,[FromServices] Wechatpay pay=null)
+        [HttpPost, Route("Core/Payment/Callback/Alipay/{appID}")]
+        public async Task<IActionResult> PayCallback([FromRoute] string appId, [FromServices] IResultNotifyHandler handler = null)
         {
-            //Debugger.Break();
-
             Request.EnableBuffering();
 
             //自定义MessageHandler，对微信请求的详细判断操作都在这里面。
             var inputStream = Request.Body;
             inputStream.Position = 0;
 
+            var pay = AlipayFactory.GetByAppId(appId);
 
-
-            //Wechatpay pay = (Wechatpay)provider.GetService(typeof(Wechatpay));
-
-            if (pay == null)
-            {
-                pay = WechatpayFactory.GetByAppId(appId: appId);
-            }
-
-            if (pay == null)
-            {
-                throw new ArgumentException("AppId不存在配置");
-            }
-
-            var xml = inputStream.ReadToEnd(); 
-
-            LoggerManager.Default.Debug(xml);
-
-            var result = await pay.NotifyHandler().DecodePaymentNotifyData(xml);
+            var result = await pay.NotifyHandler().DecodePaymentNotifyData(inputStream);
 
             if (!result)
             {
@@ -57,7 +35,7 @@ namespace Kugar.Payment.Wechatpay.Web
             {
                 if (handler != null)
                 {
-                    var ret = await handler.OnPaymentNotifyAsync(pay, result.ReturnData, appId);
+                    var ret = await handler.OnPaymentNotifyAsync(result.ReturnData, appId);
 
                     if (ret)
                     {
@@ -81,8 +59,8 @@ namespace Kugar.Payment.Wechatpay.Web
         /// <param name="appId"></param>
         /// <param name="handler"></param>
         /// <returns></returns>
-        [HttpPost, Route("Core/Refund/Callback/Wechatpay/{appID}")]
-        public async Task<IActionResult> RefundCallback([FromRoute] string appId, [FromServices] IResultNotifyHandler handler = null, [FromServices] Wechatpay pay = null)
+        [HttpPost, Route("Core/Refund/Callback/Alipay/{appID}")]
+        public async Task<IActionResult> RefundCallback([FromRoute] string appId, [FromServices] IResultNotifyHandler handler = null)
         {
             Request.EnableBuffering();
 
@@ -90,17 +68,7 @@ namespace Kugar.Payment.Wechatpay.Web
             var inputStream = Request.Body;
             inputStream.Position = 0;
 
-            if (pay == null)
-            {
-                pay = WechatpayFactory.GetByAppId(appId: appId);
-            }
-
-            if (pay == null)
-            {
-                throw new ArgumentException("AppId不存在配置");
-            }
-
-            //var pay = WechatpayFactory.GetByAppId(appId);
+            var pay = AlipayFactory.GetByAppId(appId);
 
             var result = await pay.NotifyHandler().DecodeRefundNotifyData(inputStream);
 
@@ -112,7 +80,7 @@ namespace Kugar.Payment.Wechatpay.Web
             {
                 if (handler != null)
                 {
-                    var ret = await handler.OnRefundNotifyAsync(pay, result.ReturnData, appId);
+                    var ret = await handler.OnRefundNotifyAsync(result.ReturnData, appId);
 
                     if (ret)
                     {

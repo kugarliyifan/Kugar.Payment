@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Kugar.Core.ExtMethod;
+using Kugar.Payment.Common;
 using Kugar.Payment.Common.Helpers;
 
 namespace Kugar.Payment.Wechatpay.Results
@@ -11,7 +12,7 @@ namespace Kugar.Payment.Wechatpay.Results
     /// <summary>
     /// 退款查询结果
     /// </summary>
-    public class RefundQueryResult : WechatPayResultBase
+    public class RefundQueryResult : WechatPayResultBase,ICommonRefundResult
     {
         internal RefundQueryResult(IReadOnlyDictionary<string, string> source) : base(source)
         {
@@ -30,6 +31,11 @@ namespace Kugar.Payment.Wechatpay.Results
                 if (RefundCount > 0)
                 {
                     this.Logs = Enumerable.Range(0, RefundCount).Select(x => new RefundLogs(source, x)).ToList();
+
+                    var log = Logs.FirstOrDefault();
+
+                    this.OutRefundNo = log.OutRefundNo;
+                    this.RefundId = log.RefundId;
                 }
             }
         }
@@ -143,5 +149,9 @@ namespace Kugar.Payment.Wechatpay.Results
             /// </summary>
             public bool IsSuccess { set; get; }
         }
+
+        public string OutRefundNo { get; }
+
+        public string RefundId { get; }
     }
 }

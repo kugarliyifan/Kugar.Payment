@@ -39,6 +39,26 @@ namespace Kugar.Payment.Common.Helpers
                 return source;
             }
         }
-         
+
+        public static Dictionary<TKey, TValue> AddIf<TKey, TValue>(this Dictionary<TKey, TValue> source, bool isAdd, TKey key,
+            Func<TValue> valueFactory)
+        {
+            if (isAdd)
+            {
+                if (source.ContainsKey(key))
+                {
+                    return source;
+                }
+                else
+                {
+                    source.Add(key, valueFactory());
+                    return source;
+                }
+            }
+            else
+            {
+                return source;
+            }
+        }
     }
 }

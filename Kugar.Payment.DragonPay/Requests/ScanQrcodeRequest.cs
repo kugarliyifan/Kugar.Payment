@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Kugar.Core.ExtMethod;
+using Kugar.Payment.DragonPay.Enums;
 
 namespace Kugar.Payment.DragonPay.Requests
 {
@@ -24,6 +26,28 @@ namespace Kugar.Payment.DragonPay.Requests
         /// 用户订单中查看到的标题
         /// </summary>
         public string Body { set; get; }
+
+        public QrCodeType QrCodeType
+        {
+            get
+            {
+                if (AuthCode?.Length>2)
+                {
+                    var preAuthCode = AuthCode.Left(2).ToInt();
+
+                    if (preAuthCode >= 25 && preAuthCode <= 30 && AuthCode.Length == 18)
+                    {
+                        return QrCodeType.Alipay;
+                    }
+                    else if (preAuthCode >= 10 && preAuthCode <= 15 && AuthCode.Length == 18)
+                    {
+                        return QrCodeType.Wechat;
+                    }
+                }
+
+                return QrCodeType.Dragon;
+            }
+        }
 
 
         public override string ToUrl()
