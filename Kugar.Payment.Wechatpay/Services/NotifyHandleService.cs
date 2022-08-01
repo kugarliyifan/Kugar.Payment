@@ -38,6 +38,8 @@ namespace Kugar.Payment.Wechatpay.Services
 
             var data = new NotifyPaymentResult(result.ReturnData);
 
+            data.RawResult = xml;
+
             if (!data.IsSuccess)
             {
                 return new SuccessResultReturn<NotifyPaymentResult>(data);
@@ -109,6 +111,8 @@ namespace Kugar.Payment.Wechatpay.Services
             var d = FromXml(data);
 
             var result = new RefundNotifyResult(d.ReturnData);
+
+            result.RawResult = data;
 
             return new SuccessResultReturn<RefundNotifyResult>(result);
         }

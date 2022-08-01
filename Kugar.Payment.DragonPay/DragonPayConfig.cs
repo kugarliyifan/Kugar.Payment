@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Kugar.Payment.Common;
+using Kugar.Payment.Common.Enum;
+using Kugar.Payment.DragonPay.Enums;
 
 namespace Kugar.Payment.DragonPay
 {
@@ -38,5 +40,12 @@ namespace Kugar.Payment.DragonPay
         /// </summary>
         public string WechatpayAppId { set; get; }
 
+        /// <summary>
+        /// 微信公众号/小程序AppId
+        /// </summary>
+        public string WechatAppId { set; get; }
+        
+        public WechatType? WechatType { set; get; }
+         
     }
 }

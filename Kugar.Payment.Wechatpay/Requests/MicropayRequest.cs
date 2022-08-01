@@ -52,6 +52,13 @@ namespace Kugar.Payment.Wechatpay.Requests
             {
                 return new FailResultReturn<MicropayResult>("out_trade_no不能为空");
             }
+            
+            if (OutTradeNo.Length>32)
+            {
+                return new FailResultReturn<MicropayResult>("out_trade_no不能超过32个字符");
+            }
+
+            
 
             return base.Validate();
         }

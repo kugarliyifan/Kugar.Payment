@@ -95,14 +95,15 @@ namespace Kugar.Payment.Wechatpay
                 else
                 {
                     notifyUrl = $"{host}/{notifyUrl}";
-                }
+                } 
+            }
 
-                return notifyUrl;
-            }
-            else
+            if (!string.IsNullOrWhiteSpace(notifyUrl) && notifyUrl.Contains("{appID}"))
             {
-                return notifyUrl;
+                notifyUrl = notifyUrl.Replace("{appID}", _config.AppId);
             }
+
+            return notifyUrl;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Kugar.Core.BaseStruct;
 
 namespace Kugar.Payment.DragonPay.Requests
 {
@@ -14,5 +15,7 @@ namespace Kugar.Payment.DragonPay.Requests
         protected DragonPayConfig Config { set; get; }
 
         public abstract string ToUrl();
+
+        public virtual ResultReturn Check() => SuccessResultReturn.Default;
     }
 }

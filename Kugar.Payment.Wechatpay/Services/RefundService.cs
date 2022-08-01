@@ -111,7 +111,7 @@ namespace Kugar.Payment.Wechatpay.Services
                 return new FailResultReturn<RefundResult>("transaction_id和OutTradeNo不能同时为空");
             }
 
-            if (!string.IsNullOrWhiteSpace(_refundOrderNo))
+            if (string.IsNullOrWhiteSpace(_refundOrderNo))
             {
                 return new FailResultReturn<RefundResult>("RefundOrderNo不能为空");
             }
@@ -134,7 +134,11 @@ namespace Kugar.Payment.Wechatpay.Services
             dic.AddOrUpdate("refund_fee", (int)(_refundAmount * 100));//退款金额
             dic.AddOrUpdate("out_refund_no", _refundOrderNo);//随机生成商户退款单号
             dic.AddOrUpdate("op_user_id", Config.MchId);//操作员，默认为商户号
-            dic.AddOrUpdate("refund_desc", _refund_desc);
+
+            if (!string.IsNullOrWhiteSpace(_refund_desc))
+            {
+                dic.AddOrUpdate("refund_desc", _refund_desc);
+            }
 
             var notifyUrl = string.IsNullOrWhiteSpace(_notifyUrl) ? Config.RefundNotifyUrl : _notifyUrl;
 
@@ -145,7 +149,7 @@ namespace Kugar.Payment.Wechatpay.Services
 
             string url = $"{Config.GatewayHost}/secapi/pay/refund";
 
-            var result = await PostData(url, dic);
+            var result = await PostData(url, dic,useClientCert:true,needTimestamp:false);
 
             if (result.IsSuccess && CheckIsSuccess(result.ReturnData))
             {

@@ -38,13 +38,18 @@ namespace Kugar.Payment.Wechatpay.Services
             return await PostData(url, inputData, retryCount, useClientCert);
         }
 
-        protected async Task<ResultReturn<IReadOnlyDictionary<string, string>>> PostData(string url, Dictionary<string, OneOf<int, string>> inputData, int retryCount = 5, bool useClientCert = false)
+        protected async Task<ResultReturn<IReadOnlyDictionary<string, string>>> PostData(string url, Dictionary<string, OneOf<int, string>> inputData, int retryCount = 5, bool useClientCert = false,bool needTimestamp=true)
         {
             inputData.AddOrUpdate("appid", Config.AppId);//公众账号ID
             inputData.AddOrUpdate("mch_id", Config.MchId);//商户号
             inputData.AddOrUpdate("nonce_str", Guid.NewGuid().ToString().Replace("-", ""));//随机字符串
             inputData.AddOrUpdate("sign_type", Config.SignType == SignType.MD5 ? "MD5" : "HMAC-SHA256");//签名类型
-            inputData.AddOrUpdate("time_stamp", GenerateTimeStamp());//时间戳
+
+            if (needTimestamp)
+            {
+                inputData.AddOrUpdate("time_stamp", GenerateTimeStamp());//时间戳    
+            }
+            
             var ret = ToUrl(inputData);
 
             if (!ret.IsSuccess)

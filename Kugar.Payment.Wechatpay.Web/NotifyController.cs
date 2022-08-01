@@ -57,6 +57,7 @@ namespace Kugar.Payment.Wechatpay.Web
             {
                 if (handler != null)
                 {
+                    result.ReturnData.RawResult = xml;
                     var ret = await handler.OnPaymentNotifyAsync(pay, result.ReturnData, appId);
 
                     if (ret)

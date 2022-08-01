@@ -73,10 +73,17 @@ namespace Kugar.Payment.Wechatpay.Requests
                 return new FailResultReturn<JsApiPayArgument>("out_trade_no不能为空");
             }
 
+            if (OutTradeNo.Length>32)
+            {
+                return new FailResultReturn<JsApiPayArgument>("out_trade_no不能超过32个字符");
+            }
+            
             if (string.IsNullOrWhiteSpace(SpbillCreateIp))
             {
                 return new FailResultReturn<JsApiPayArgument>("spbill_create_ip不能为空");
             }
+            
+            
 
             return SuccessResultReturn.Default;
         }

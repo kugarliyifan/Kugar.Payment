@@ -100,6 +100,7 @@ namespace Kugar.Payment.Wechatpay.Results
         /// 总代金券金额	,单位为元
         /// </summary>
         public decimal CouponFee { get; }
+         
 
         /// <summary>
         /// 本次交易所使用的优惠券信息
