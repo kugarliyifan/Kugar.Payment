@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
+		<TargetFrameworks>netcoreapp3.1;net5.0;net6.0;</TargetFrameworks>
 		<BaseOutputPath>..\bin\</BaseOutputPath>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Version>1.0.18</Version>
+		<Version>1.0.20</Version>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<Description>用于对接建行龙存管龙支付</Description>
@@ -17,6 +17,10 @@
 	  <Compile Remove="bin\**" />
 	  <EmbeddedResource Remove="bin\**" />
 	  <None Remove="bin\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Results\RefundNotifyResult.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -38,6 +42,10 @@
 			<Pack>true</Pack>
 			<PackagePath>lib\net5.0;lib\netcoreapp3.1;</PackagePath>
 			</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Flurl.Http" Version="3.2.4" />
 	</ItemGroup>
 
 	<ItemGroup>

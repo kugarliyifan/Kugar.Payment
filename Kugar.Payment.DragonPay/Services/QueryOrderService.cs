@@ -9,34 +9,34 @@ using Kugar.Payment.DragonPay.Results;
 
 namespace Kugar.Payment.DragonPay.Services
 {
-    public class QueryOrderService:DragonServiceBase
+    public class QueryScanQrCodeOrderService:DragonServiceBase
     {
-        private QueryOrderRequest _request = null;
+        private QueryScanQrCodeOrderRequest _request = null;
 
-        public QueryOrderService(DragonPay pay, DragonPayConfig config) : base(pay, config)
+        public QueryScanQrCodeOrderService(DragonPay pay, DragonPayConfig config) : base(pay, config)
         {
-            _request = new QueryOrderRequest(config);
+            _request = new QueryScanQrCodeOrderRequest(config);
         }
 
-        public QueryOrderService OrderId(string orderId)
+        public QueryScanQrCodeOrderService OrderId(string orderId)
         {
             _request.OrderId = orderId;
             return this;
         }
 
-        public QueryOrderService QrCodeType(QrCodeType type)
+        public QueryScanQrCodeOrderService QrCodeType(QrCodeType type)
         {
             _request.QrCodeType = type;
             return this;
         }
 
-        public QueryOrderService AuthCode(string authCode)
+        public QueryScanQrCodeOrderService AuthCode(string authCode)
         {
             _request.AuthCode = authCode;
             return this;
         }
 
-        public QueryOrderService ReturnOpenId(bool isReturn = true)
+        public QueryScanQrCodeOrderService ReturnOpenId(bool isReturn = true)
         {
             _request.ReturnOpenId = isReturn;
             return this;

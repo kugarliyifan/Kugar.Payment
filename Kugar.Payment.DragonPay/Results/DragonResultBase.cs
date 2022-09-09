@@ -14,10 +14,14 @@ namespace Kugar.Payment.DragonPay.Results
     {
         public DragonResultBase(JObject json)
         {
-            this.Code=json.GetString("ERRCODE");
-            this.Message = json.GetString("ERRMSG");
+            if (json!=null)
+            {
+                Code=json.GetString("ERRCODE");
+                Message = json.GetString("ERRMSG");
 
-            this.IsSuccess = json.GetString("RESULT") == "Y";
+                IsSuccess = json.GetString("RESULT") == "Y";
+            }
+            
         }
 
         ///// <summary>

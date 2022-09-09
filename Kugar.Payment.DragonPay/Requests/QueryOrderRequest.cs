@@ -5,9 +5,9 @@ using Kugar.Payment.DragonPay.Enums;
 
 namespace Kugar.Payment.DragonPay.Requests
 {
-    public class QueryOrderRequest:DragonRequestBase
+    public class QueryScanQrCodeOrderRequest:DragonRequestBase
     {
-        public QueryOrderRequest(DragonPayConfig config) : base(config)
+        public QueryScanQrCodeOrderRequest(DragonPayConfig config) : base(config)
         {
         }
 

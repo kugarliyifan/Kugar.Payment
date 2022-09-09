@@ -77,7 +77,7 @@ namespace Kugar.Payment.DragonPay.Services
                         {
                             await Task.Delay(result.WaitTime);
 
-                            var tmpRet = await Parent.QueryOrder().AuthCode(_request.AuthCode)
+                            var tmpRet = await Parent.QueryScanQrCodeOrder().AuthCode(_request.AuthCode)
                                 .OrderId(_request.OrderId)
                                 .ExecuteAsync();
 

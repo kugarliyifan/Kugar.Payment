@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kugar.Payment.DragonPay", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kugar.Payment.Wechatpay.Web", "Kugar.Payment.Wechatpay.Web\Kugar.Payment.Wechatpay.Web.csproj", "{CFDD7106-A7A1-4B2F-85E9-486CE33A90B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kugar.Payment.Alipay.Web", "Kugar.Payment.Alipay.Web\Kugar.Payment.Alipay.Web.csproj", "{E898B22C-FF95-4556-B2A3-963F90522AFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kugar.Payment.Alipay.Web", "Kugar.Payment.Alipay.Web\Kugar.Payment.Alipay.Web.csproj", "{E898B22C-FF95-4556-B2A3-963F90522AFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kugar.Payment.DragonPay.Web", "Kugar.Payment.DragonPay.Web\Kugar.Payment.DragonPay.Web.csproj", "{3DF15E77-CAFD-4627-84B8-C2C20C696279}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{E898B22C-FF95-4556-B2A3-963F90522AFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E898B22C-FF95-4556-B2A3-963F90522AFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E898B22C-FF95-4556-B2A3-963F90522AFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DF15E77-CAFD-4627-84B8-C2C20C696279}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DF15E77-CAFD-4627-84B8-C2C20C696279}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DF15E77-CAFD-4627-84B8-C2C20C696279}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DF15E77-CAFD-4627-84B8-C2C20C696279}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

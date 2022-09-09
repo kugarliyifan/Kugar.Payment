@@ -46,6 +46,14 @@ namespace Kugar.Payment.DragonPay
         public string WechatAppId { set; get; }
         
         public WechatType? WechatType { set; get; }
+
+        public int RefundPort { set; get; }
+
+        public string RefundOperatorName { set; get; }
+
+        public string RefundOperatorPassword { set; get; }
+
+
          
     }
 }
