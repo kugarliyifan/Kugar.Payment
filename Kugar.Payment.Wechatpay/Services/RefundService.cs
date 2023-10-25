@@ -157,7 +157,15 @@ namespace Kugar.Payment.Wechatpay.Services
             }
             else
             {
-                return new FailResultReturn<RefundResult>($"{result.ReturnData.TryGetValue("err_code").ToString()},{result.ReturnData.TryGetValue("err_code_des")}".ToStringEx());
+                if (result.ReturnData!=null)
+                {
+                    return new FailResultReturn<RefundResult>($"{result.ReturnData.TryGetValue("err_code").ToString()},{result.ReturnData.TryGetValue("err_code_des")}".ToStringEx());    
+                }
+                else
+                {
+                    return new FailResultReturn<RefundResult>(result.Error);
+                }
+                
             }
         }
     }

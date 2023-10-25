@@ -3,6 +3,7 @@
   <PropertyGroup>
 	  <TargetFrameworks>netcoreapp3.1;net5.0;net6.0;</TargetFrameworks>
 	  <BaseOutputPath>..\bin\</BaseOutputPath>
+	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	  <Version>1.0.20</Version>
 	  <IncludeSymbols>true</IncludeSymbols>
 	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -11,6 +12,12 @@
 	  <RepositoryUrl>https://github.com/kugarliyifan/Kugar.Payment</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+  </ItemGroup>
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />

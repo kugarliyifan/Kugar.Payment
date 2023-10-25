@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using System.Xml;
 using Kugar.Core.BaseStruct;
 using Kugar.Core.ExtMethod;
+using Kugar.Core.Log;
 using Kugar.Core.Network;
 using Kugar.Payment.Wechatpay.Enums;
 using Kugar.Payment.Wechatpay.Requests;
+using Newtonsoft.Json;
 using OneOf;
 using static Kugar.Payment.Wechatpay.Services.MicropayService;
 
@@ -89,6 +91,7 @@ namespace Kugar.Payment.Wechatpay.Services
             }
             catch (Exception e)
             {
+                LoggerManager.Default.Debug($"微信支付提交错误:{JsonConvert.SerializeObject(e)}");
                 return new FailResultReturn<IReadOnlyDictionary<string, string>>(e);
             }
         }
