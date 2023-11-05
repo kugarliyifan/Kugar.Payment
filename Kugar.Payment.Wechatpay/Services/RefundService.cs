@@ -142,10 +142,14 @@ namespace Kugar.Payment.Wechatpay.Services
 
             var notifyUrl = string.IsNullOrWhiteSpace(_notifyUrl) ? Config.RefundNotifyUrl : _notifyUrl;
 
-            notifyUrl = Parent.BuildNotifyUrl(notifyUrl);
+            if (!string.IsNullOrWhiteSpace(notifyUrl))
+            {
+                notifyUrl = Parent.BuildNotifyUrl(notifyUrl);
 
-            dic.AddIf(!string.IsNullOrWhiteSpace(notifyUrl), "notify_url", notifyUrl);
+                dic.AddIf(!string.IsNullOrWhiteSpace(notifyUrl), "notify_url", notifyUrl);
 
+            }
+             
 
             string url = $"{Config.GatewayHost}/secapi/pay/refund";
 

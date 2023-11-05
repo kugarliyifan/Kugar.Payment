@@ -291,7 +291,7 @@ namespace Kugar.Payment.Wechatpay.Services
 
             retry:
 
-            var result = await base.PostData(url, dic, 3);
+            var result = await base.PostData(url, dic, 3,useClientCert:true,needTimestamp:false);
 
             if (result.IsSuccess && CheckIsSuccess(result.ReturnData))
             {
@@ -302,11 +302,11 @@ namespace Kugar.Payment.Wechatpay.Services
             }
             
             //如果结果为success且不需要重新调用撤销，则表示撤销成功
-            if (result.ReturnData.TryGetValue("result_code").ToString() != "SUCCESS" && result.ReturnData.TryGetValue("recall").ToString() == "N")
+            if (result.ReturnData.TryGetValue("result_code").ToStringEx() == "SUCCESS" && result.ReturnData.TryGetValue("recall").ToString() == "N")
             {
                 return SuccessResultReturn.Default;
             }
-            else if (result.ReturnData.TryGetValue("recall").ToString() == "Y")
+            else if (result.ReturnData.TryGetValue("recall").ToStringEx() == "Y")
             {
                 count--;
 
@@ -348,7 +348,7 @@ namespace Kugar.Payment.Wechatpay.Services
 
         retry:
 
-            var result = await base.PostData(url, dic, 3);
+            var result = await base.PostData(url, dic, 3, useClientCert: true, needTimestamp: false);
 
             if (result.IsSuccess && CheckIsSuccess(result.ReturnData))
             {
@@ -359,11 +359,65 @@ namespace Kugar.Payment.Wechatpay.Services
             }
 
             //如果结果为success且不需要重新调用撤销，则表示撤销成功
-            if (result.ReturnData.TryGetValue("result_code").ToString() != "SUCCESS" && result.ReturnData.TryGetValue("recall").ToString() == "N")
+            if (result.ReturnData.TryGetValue("result_code").ToStringEx() == "SUCCESS" && result.ReturnData.TryGetValue("recall").ToString() == "N")
             {
                 return SuccessResultReturn.Default;
             }
-            else if (result.ReturnData.TryGetValue("recall").ToString() == "Y")
+            else if (result.ReturnData.TryGetValue("recall").ToStringEx() == "Y")
+            {
+                count--;
+
+                if (count <= 0)
+                {
+                    return new FailResultReturn("超过重试次数");
+                }
+
+                goto retry;
+            }
+            //接口调用失败
+            else if (result.ReturnData.TryGetValue("return_code").ToString() != "SUCCESS")
+            {
+                return new FailResultReturn($"{result.ReturnData.TryGetValue("err_code").ToString()},{result.ReturnData.TryGetValue("err_code_des")}".ToStringEx());
+            }
+            return new FailResultReturn<string>($"{result.ReturnData.TryGetValue("err_code").ToString()},{result.ReturnData.TryGetValue("err_code_des")}".ToStringEx(), 0);
+        }
+
+        /// <summary>
+        /// 按单号关闭订单
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        public async Task<ResultReturn> CloseOrderByOrderId(string orderId)
+        {
+            string url = $"{Config.GatewayHost}/pay/closeorder";
+
+            if (orderId == null)
+            {
+                return new FailResultReturn("单号无效");
+            }
+
+            var dic = new Dictionary<string, OneOf<int, string>>()
+            {
+                ["out_trade_no"] = orderId
+            };
+
+            var count = 5;
+
+            retry:
+
+            var result = await base.PostData(url, dic, 3, useClientCert: true, needTimestamp: false);
+
+            if (result.IsSuccess && CheckIsSuccess(result.ReturnData))
+            {
+                return SuccessResultReturn.Default;
+            }
+
+            //如果结果为success且不需要重新调用撤销，则表示撤销成功
+            if (result.ReturnData.TryGetValue("result_code").ToStringEx() == "SUCCESS" )
+            {
+                return SuccessResultReturn.Default;
+            }
+            else if (result.ReturnData.TryGetValue("recall").ToStringEx() == "Y")
             {
                 count--;
 
